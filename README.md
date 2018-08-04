@@ -25,7 +25,7 @@ To "install" this repository's code into your BDE-style package, run
 ```console
 $ ./rename-package <package-name> <path/to/package>
 ```
-The `package_*` files will be transformed into files approriate for use in the
+The `package_*` files will be transformed into files appropriate for use in the
 specified package. Then the transformed files will be copied into the specified
 directory.
 
