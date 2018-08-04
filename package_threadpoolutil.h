@@ -20,11 +20,11 @@ struct ThreadPoolUtil {
     // operating on generic thread pools.
 
     template <typename THREAD_POOL>
-    static int enqueueWithTimeout(THREAD_POOL                   *threadPool,
-                                  bdlmt::EventScheduler         *scheduler,
-                                  const bsl::function<void()>&   job,
-                                  const bsls::TimeInterval&      timeout,
-                                  const bsl::function<void())>&  onTimeout);
+    static int enqueueWithTimeout(THREAD_POOL                  *threadPool,
+                                  bdlmt::EventScheduler        *scheduler,
+                                  const bsl::function<void()>&  job,
+                                  const bsls::TimeInterval&     timeout,
+                                  const bsl::function<void()>&  onTimeout);
         // Enqueue the specified 'job' to be executed by the next available
         // thread managed by the specified 'threadPool'. Use the specified
         // 'scheduler' to ensure that from the time the 'job' begins execution,
@@ -38,7 +38,7 @@ struct ThreadPoolUtil {
     static int enqueueWithDeadline(THREAD_POOL                  *threadPool,
                                    bdlmt::EventScheduler        *scheduler,
                                    const bsl::function<void()>&  job,
-                                   const bsl::function<void()>&  deadline,
+                                   const bsls::TimeInterval&     deadline,
                                    const bsl::function<void()>&  onTimeout);
         // Enqueue the specified 'job' to the executed by the next available
         // thread managed by the specified 'threadPool'. Use the specified
@@ -65,7 +65,7 @@ class ThreadPoolUtil_WithCancel {
   public:
     // CREATORS
     explicit ThreadPoolUtil_WithCancel(
-        const bsl::function<void()>&               job
+        const bsl::function<void()>&               job,
         const bdlmt::EventScheduler::EventHandle&  event,
         bdlmt::EventScheduler                     *scheduler);
         // Create a new 'ThreadPoolUtil_WithCancel' object that, when invoked,
@@ -73,7 +73,7 @@ class ThreadPoolUtil_WithCancel {
         // 'event' on the specified 'scheduler'.
 
     // ACCESSORS
-    void operator() const;
+    void operator()() const;
         // Invoke the job contained within the object. Afterward, cancel the
         // event contained within this object on the scheduler contained within
         // this object.
@@ -91,21 +91,24 @@ class ThreadPoolUtil_WithTimeout {
     // DATA
     const bsl::function<void()>        d_job;
     const bsls::TimeInterval           d_timeout;
+    const bsl::function<void()>        d_onTimeout;
     bdlmt::EventScheduler       *const d_scheduler_p;
 
   public:
     // CREATORS
     explicit ThreadPoolUtil_WithTimeout(
-        const bsl::function<void()>&  job
+        const bsl::function<void()>&  job,
         const bsls::TimeInterval&     timeout,
+        const bsl::function<void()>&  onTimeout,
         bdlmt::EventScheduler        *scheduler);
         // Create a new 'ThreadPoolUtil_WithTimeout' object that, when invoked,
         // will invoke the specified 'job' after scheduling the specified
-        // 'timeout' using the specified 'scheduler', and then cancel the
-        // timeout once the 'job' has completed.
+        // 'onTimeout' to execute after the specified 'timeout' using the
+        // specified 'scheduler', and then cancel the timeout once the 'job'
+        // has completed.
 
     // ACCESSORS
-    void operator() const;
+    void operator()() const;
         // Schedule the timeout contained within this object using the
         // scheduler contained within this object. Then invoke the job
         // contained within this object before finally canceling the timeout.
@@ -121,17 +124,17 @@ class ThreadPoolUtil_WithTimeout {
 
 template <typename THREAD_POOL>
 int ThreadPoolUtil::enqueueWithTimeout(
-    THREAD_POOL                   *threadPool,
-    bdlmt::EventScheduler         *scheduler,
-    const bsl::function<void()>&   job,
-    const bsls::TimeInterval&      timeout,
-    const bsl::function<void())>&  onTimeout)
+    THREAD_POOL                  *threadPool,
+    bdlmt::EventScheduler        *scheduler,
+    const bsl::function<void()>&  job,
+    const bsls::TimeInterval&     timeout,
+    const bsl::function<void()>&  onTimeout)
 {
     BSLS_ASSERT_OPT(threadPool);
     BSLS_ASSERT_OPT(scheduler);
 
     return threadPool->enqueueJob(
-        ThreadPoolUtil_WithTimeout(job, timeout, scheduler));
+        ThreadPoolUtil_WithTimeout(job, timeout, onTimeout, scheduler));
 }
 
 template <typename THREAD_POOL>
@@ -139,15 +142,17 @@ int ThreadPoolUtil::enqueueWithDeadline(
     THREAD_POOL                  *threadPool,
     bdlmt::EventScheduler        *scheduler,
     const bsl::function<void()>&  job,
-    const bsl::function<void()>&  deadline,
+    const bsls::TimeInterval&     deadline,
     const bsl::function<void()>&  onTimeout)
 {
     BSLS_ASSERT_OPT(threadPool);
     BSLS_ASSERT_OPT(scheduler);
 
     bdlmt::EventScheduler::EventHandle event;
-    if (const int rc = scheduler->scheduleEvent(&event, deadline, onTimeout))
-        return rc;
+    scheduler->scheduleEvent(&event, deadline, onTimeout);
+
+    if (event == bdlmt::EventScheduler::EventHandle())
+        return 1;
 
     return threadPool->enqueueJob(
         ThreadPoolUtil_WithCancel(job, event, scheduler));

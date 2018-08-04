@@ -3,7 +3,10 @@
 
 #include <bdlt_currenttime.h>
 
+#include <bslmt_threadattributes.h>
 #include <bslmt_threadutil.h>
+
+#include <bsls_timeinterval.h>
 
 #include <bsl_iostream.h>
 
@@ -17,7 +20,7 @@ bsls::TimeInterval seconds(double howManySeconds)
 
 void takeTooDamnedLong()
 {
-    bslmt::ThreadUtil::sleep(bsls::TimeInterval.addSeconds(5));
+    bslmt::ThreadUtil::sleep(bsls::TimeInterval().addSeconds(5));
 }
 
 void complain()

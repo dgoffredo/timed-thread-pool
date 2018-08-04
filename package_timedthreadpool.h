@@ -9,6 +9,7 @@
 #include <bsl_functional.h>
 
 namespace BloombergLP {
+namespace bslma { class Allocator; }
 namespace bsls { class TimeInterval; }
 namespace package {
 
@@ -49,9 +50,9 @@ class TimedThreadPool : private bdlmt::ThreadPool {
         // this object.
 
     // MANIPULATORS
-    int enqueueWithTimeout(const bsl::function<void()>&   job,
-                           const bsls::TimeInterval&      timeout,
-                           const bsl::function<void())>&  onTimeout);
+    int enqueueWithTimeout(const bsl::function<void()>&  job,
+                           const bsls::TimeInterval&     timeout,
+                           const bsl::function<void()>&  onTimeout);
         // Enqueue the specified 'job' to be executed by the next available
         // thread. Ensure that from the time the 'job' begins execution, if
         // execution has not completed within the specified 'timeout'

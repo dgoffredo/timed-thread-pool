@@ -16,7 +16,7 @@ TimedThreadPool::TimedThreadPool(
     int                             minThreads,
     int                             maxThreads,
     const bsls::TimeInterval&       maxIdleTime,
-    bslma::Allocator               *allocator = 0)
+    bslma::Allocator               *allocator)
 : bdlmt::ThreadPool(threadAttributes,
                     minThreads,
                     maxThreads,
@@ -28,27 +28,29 @@ TimedThreadPool::TimedThreadPool(
     d_eventScheduler.start();
 }
 
-~TimedThreadPool()
+TimedThreadPool::~TimedThreadPool()
 {
     stop();
     d_eventScheduler.stop();
 }
 
 // MANIPULATORS
-int enqueueWithTimeout(const bsl::function<void()>&  job,
-                       const bsls::TimeInterval&     timeout,
-                       const bsl::function<void())>& onTimeout)
+int TimedThreadPool::enqueueWithTimeout(
+    const bsl::function<void()>& job,
+    const bsls::TimeInterval&    timeout,
+    const bsl::function<void()>& onTimeout)
 {
     return ThreadPoolUtil::enqueueWithTimeout(
-        this, &d_eventScheduler, timeout, onTimeout);
+        this, &d_eventScheduler, job, timeout, onTimeout);
 }
 
-int enqueueWithDeadline(const bsl::function<void()>&  job,
-                        const bsls::TimeInterval&     deadline,
-                        const bsl::function<void()>&  onTimeout)
+int TimedThreadPool::enqueueWithDeadline(
+    const bsl::function<void()>& job,
+    const bsls::TimeInterval&    deadline,
+    const bsl::function<void()>& onTimeout)
 {
     return ThreadPoolUtil::enqueueWithDeadline(
-        this, &d_eventScheduler, deadline, onTimeout);
+        this, &d_eventScheduler, job, deadline, onTimeout);
 }
 
 }  // close package namespace

@@ -12,7 +12,7 @@ namespace package {
 
 // CREATORS
 ThreadPoolUtil_WithCancel::ThreadPoolUtil_WithCancel(
-        const bsl::function<void()>&               job
+        const bsl::function<void()>&               job,
         const bdlmt::EventScheduler::EventHandle&  event,
         bdlmt::EventScheduler                     *scheduler)
 : d_job(job)
@@ -24,7 +24,7 @@ ThreadPoolUtil_WithCancel::ThreadPoolUtil_WithCancel(
 }
 
 // ACCESSORS
-void ThreadPoolUtil_WithCancel::operator() const
+void ThreadPoolUtil_WithCancel::operator()() const
 {
     d_job();
     
@@ -39,11 +39,13 @@ void ThreadPoolUtil_WithCancel::operator() const
 
 // CREATORS
 ThreadPoolUtil_WithTimeout::ThreadPoolUtil_WithTimeout(
-        const bsl::function<void()>&  job
+        const bsl::function<void()>&  job,
         const bsls::TimeInterval&     timeout,
+        const bsl::function<void()>&  onTimeout,
         bdlmt::EventScheduler        *scheduler)
 : d_job(job)
 , d_timeout(timeout)
+, d_onTimeout(onTimeout)
 , d_scheduler_p(scheduler)
 {
     BSLS_ASSERT_OPT(d_scheduler_p);
@@ -51,15 +53,15 @@ ThreadPoolUtil_WithTimeout::ThreadPoolUtil_WithTimeout(
 }
 
 // ACCESSORS
-void ThreadPoolUtil_WithTimeout::operator() const
+void ThreadPoolUtil_WithTimeout::operator()() const
 {
     const bsls::TimeInterval deadline = bdlt::CurrentTime::now() + d_timeout;
 
     bdlmt::EventScheduler::EventHandle event;
-    BSLS_ASSERT(d_scheduler);
-    d_scheduler->scheduleEvent(&event, deadline, onTimeout);
+    BSLS_ASSERT(d_scheduler_p);
+    d_scheduler_p->scheduleEvent(&event, deadline, d_onTimeout);
 
-    ThreadPoolUtil_WithCancel(d_job, event, d_scheduler)();
+    ThreadPoolUtil_WithCancel(d_job, event, d_scheduler_p)();
 }
 
 }  // close package namespace
