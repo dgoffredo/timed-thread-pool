@@ -57,8 +57,8 @@ class TimedThreadPool : private bdlmt::ThreadPool {
         // execution has not completed within the specified 'timeout'
         // (expressed as a time interval relative to the start of execution),
         // the specified 'onTimeout' is invoked. Return zero if the 'job' was
-        // enqueued successfully and the timeout event was scheduled
-        // successfully, or return a nonzero value if an error occurred.
+        // enqueued successfully, or return a nonzero value if an error
+        // occurred.
 
     int enqueueWithDeadline(const bsl::function<void()>&  job,
                             const bsls::TimeInterval&     deadline,
