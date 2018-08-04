@@ -6,12 +6,12 @@ Invoke a function when a thread pool job is taking too long.
 
 Why
 ---
-Somebody was complaining that BDE's [bdlmt::ThreadPool][thread-pool] doesn't do
+Somebody was complaining that [BDE's bdlmt::ThreadPool][thread-pool] doesn't do
 this.
 
 What
 ----
-`timed-thread-pool` is a template for two BDE-style components that
+`timed-thread-pool` is a template for two [BDE][bde]-style components that
 implement a thread pool, based on [bdlmt::ThreadPool][thread-pool], that
 additionally allows each enqueued job to be associated with a timeout
 (relative to the beginning of the job execution) or with a deadline (absolute),
@@ -46,5 +46,6 @@ are public and parameterized on the type of the thread pool. So, the logic
 of scheduling timeouts along with enqueued jobs can be reused for other
 types of thread pools, such as [bdlmt::FixedThreadPool][fixed].
 
+[bde]: https://github.com/bloomberg/bde
 [thread-pool]: https://bloomberg.github.io/bde/group__bdlmt__threadpool.html
 [fixed]: https://bloomberg.github.io/bde/group__bdlmt__fixedthreadpool.html
