@@ -18,12 +18,12 @@ fi
 newname=$1
 outdir=$2
 
-for file in $(ls package_*); do
+for file in $(ls package_*.h package_*.cpp); do
     out=$outdir/$newname${file#package}
     upper=$(echo $newname | tr [a-z] [A-Z])
 
     sed "s/#ifndef INCLUDED_PACKAGE/#ifndef INCLUDED_$upper/" $file | \
-    sed "s/#define INCLUDED_PACKAGE/#ifndef INCLUDED_$upper/" | \
+    sed "s/#define INCLUDED_PACKAGE/#define INCLUDED_$upper/" | \
     sed "s/#include <package/#include <$newname/" | \
     sed "s/namespace package /namespace $newname /" > $out
 
