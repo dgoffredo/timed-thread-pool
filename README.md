@@ -1,3 +1,5 @@
+![timed-thread-pool](timed-thread-pool.png)
+
 Timed Thread Pool
 =================
 Invoke a function when a thread pool job is taking too long.
@@ -12,7 +14,7 @@ What
 `timed-thread-pool` is a template for two BDE-style components that
 implement a thread pool, based on [bdlmt::ThreadPool][thread-pool], that
 additionally allows each enqueued job to be associated with a timeout
-(relative to the beginning of the job execution) or a deadline (absolute),
+(relative to the beginning of the job execution) or with a deadline (absolute),
 after which if the job has not yet finished, a user-supplied callback will
 be invoked.
 
