@@ -134,6 +134,7 @@ int ThreadPoolUtil::enqueueWithTimeout(
         ThreadPoolUtil_WithTimeout(job, timeout, scheduler));
 }
 
+template <typename THREAD_POOL>
 int ThreadPoolUtil::enqueueWithDeadline(
     THREAD_POOL                  *threadPool,
     bdlmt::EventScheduler        *scheduler,
