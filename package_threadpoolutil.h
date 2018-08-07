@@ -31,7 +31,7 @@ struct ThreadPoolUtil {
         // if execution has not completed within the specified 'timeout'
         // (expressed as a time interval relative to the start of execution),
         // the specified 'onTimeout' is invoked. Return zero if the 'job' was
-        // enqueued successfullyy, or return a nonzero value if an error
+        // enqueued successfully, or return a nonzero value if an error
         // occurred.
 
     template <typename THREAD_POOL>
