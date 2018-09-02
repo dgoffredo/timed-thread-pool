@@ -17,7 +17,7 @@ namespace package {
                          // class TimedThreadPool
                          // =====================
 
-class TimedThreadPool : private bdlmt::ThreadPool {
+class TimedThreadPool : public bdlmt::ThreadPool {
     // This class implements a thread pool used for concurrently executing
     // multiple user-defined functions ("jobs"), each with an optionally
     // specified timeout or deadline, after which if the job has not completed,
@@ -32,11 +32,11 @@ class TimedThreadPool : private bdlmt::ThreadPool {
                                  bslalg::TypeTraitUsesBslmaAllocator);
 
     // CREATORS
-    explicit TimedThreadPool(const bslmt::ThreadAttributes&  threadAttributes,
-                             int                             minThreads,
-                             int                             maxThreads,
-                             const bsls::TimeInterval&       maxIdleTime,
-                             bslma::Allocator               *allocator = 0);
+    TimedThreadPool(const bslmt::ThreadAttributes&  threadAttributes,
+                    int                             minThreads,
+                    int                             maxThreads,
+                    const bsls::TimeInterval&       maxIdleTime,
+                    bslma::Allocator               *allocator = 0);
         // Construct a timed thread pool with the specified 'threadAttributes',
         // 'minThread' and 'maxThreads' minimum and maximum number of threads,
         // respectively, the specified 'maxIdleTime' maximum idle time, and
@@ -70,20 +70,6 @@ class TimedThreadPool : private bdlmt::ThreadPool {
         // specified 'onTimeout' is invoked. Return zero if the 'job' was
         // enqueued successfully and the timeout event was scheduled
         // successfully, or return a nonzero value if an error occurred.
-
-    using bdlmt::ThreadPool::drain;
-    using bdlmt::ThreadPool::enqueueJob;
-    using bdlmt::ThreadPool::resetPercentBusy;
-
-    // ACCESSORS
-    using bdlmt::ThreadPool::maxThreads;
-    using bdlmt::ThreadPool::maxIdleTime;
-    using bdlmt::ThreadPool::minThreads;
-    using bdlmt::ThreadPool::numActiveThreads;
-    using bdlmt::ThreadPool::numPendingJobs;
-    using bdlmt::ThreadPool::numWaitingThreads;
-    using bdlmt::ThreadPool::percentBusy;
-    using bdlmt::ThreadPool::threadFailures;
 };
 
 }  // close package namespace
